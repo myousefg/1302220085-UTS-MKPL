@@ -2,6 +2,12 @@ package lib;
 
 public class TaxFunction {
 
+	private static final int BASIC_NON_TAXABLE_INCOME = 54000000;
+	private static final int MARRIED_TAX_ALLOWANCE = 4500000;
+	private static final int CHILD_TAX_ALLOWANCE = 1500000;
+	private static final int MAX_CHILDREN_COUNTED = 3;
+	private static final double TAX_RATE = 0.05;
+
 	/**
 	 * Fungsi untuk menghitung jumlah pajak penghasilan pegawai yang harus
 	 * dibayarkan setahun.
@@ -26,18 +32,18 @@ public class TaxFunction {
 			System.err.println("More than 12 month working per year");
 		}
 
-		if (numberOfChildren > 3) {
-			numberOfChildren = 3;
+		if (numberOfChildren > MAX_CHILDREN_COUNTED) {
+			numberOfChildren = MAX_CHILDREN_COUNTED;
 		}
 
 		int grossIncome = (monthlySalary + otherMonthlyIncome) * numberOfMonthWorking;
 
 		int tax;
 		if (isMarried) {
-			tax = (int) Math.round(0.05 * (grossIncome - deductible
-					- (54000000 + 4500000 + (numberOfChildren * 1500000))));
+			tax = (int) Math.round(TAX_RATE * (grossIncome - deductible
+					- (BASIC_NON_TAXABLE_INCOME + MARRIED_TAX_ALLOWANCE + (numberOfChildren * CHILD_TAX_ALLOWANCE))));
 		} else {
-			tax = (int) Math.round(0.05 * (grossIncome - deductible - 54000000));
+			tax = (int) Math.round(TAX_RATE * (grossIncome - deductible - BASIC_NON_TAXABLE_INCOME));
 		}
 
 		return Math.max(tax, 0);
