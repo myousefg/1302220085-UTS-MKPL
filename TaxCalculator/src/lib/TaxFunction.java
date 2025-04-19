@@ -8,45 +8,39 @@ public class TaxFunction {
 	private static final int MAX_CHILDREN_COUNTED = 3;
 	private static final double TAX_RATE = 0.05;
 
-	/**
-	 * Fungsi untuk menghitung jumlah pajak penghasilan pegawai yang harus
-	 * dibayarkan setahun.
-	 * 
-	 * Pajak dihitung sebagai 5% dari penghasilan bersih tahunan (gaji dan pemasukan
-	 * bulanan lainnya dikalikan jumlah bulan bekerja dikurangi pemotongan)
-	 * dikurangi penghasilan tidak kena pajak.
-	 * 
-	 * Jika pegawai belum menikah dan belum punya anak maka penghasilan tidak kena
-	 * pajaknya adalah Rp 54.000.000.
-	 * Jika pegawai sudah menikah maka penghasilan tidak kena pajaknya ditambah
-	 * sebesar Rp 4.500.000.
-	 * Jika pegawai sudah memiliki anak maka penghasilan tidak kena pajaknya
-	 * ditambah sebesar Rp 4.500.000 per anak sampai anak ketiga.
-	 * 
-	 */
-
 	public static int calculateTax(EmployeeInfo info) {
+		validateMonthsWorked(info.numberOfMonthWorking);
 
-		if (info.numberOfMonthWorking > 12) {
-			System.err.println("More than 12 month working per year");
-		}
+		int grossIncome = calculateGrossIncome(info);
+		int nonTaxableIncome = calculateNonTaxableIncome(info);
 
-		if (info.numberOfChildren > MAX_CHILDREN_COUNTED) {
-			info.numberOfChildren = MAX_CHILDREN_COUNTED;
-		}
-
-		int grossIncome = (info.monthlySalary + info.otherMonthlyIncome) * info.numberOfMonthWorking;
-
-		int tax;
-		if (info.isMarried) {
-			tax = (int) Math.round(TAX_RATE * (grossIncome - info.deductible
-					- (BASIC_NON_TAXABLE_INCOME + MARRIED_TAX_ALLOWANCE
-							+ (info.numberOfChildren * CHILD_TAX_ALLOWANCE))));
-		} else {
-			tax = (int) Math.round(TAX_RATE * (grossIncome - info.deductible - BASIC_NON_TAXABLE_INCOME));
-		}
+		int taxableIncome = grossIncome - info.deductible - nonTaxableIncome;
+		int tax = (int) Math.round(TAX_RATE * taxableIncome);
 
 		return Math.max(tax, 0);
+	}
+
+	private static void validateMonthsWorked(int monthsWorked) {
+		if (monthsWorked > 12) {
+			System.err.println("More than 12 month working per year");
+		}
+	}
+
+	private static int calculateGrossIncome(EmployeeInfo info) {
+		return (info.monthlySalary + info.otherMonthlyIncome) * info.numberOfMonthWorking;
+	}
+
+	private static int calculateNonTaxableIncome(EmployeeInfo info) {
+		int nonTaxableIncome = BASIC_NON_TAXABLE_INCOME;
+
+		if (info.isMarried) {
+			nonTaxableIncome += MARRIED_TAX_ALLOWANCE;
+		}
+
+		int validChildCount = Math.min(info.numberOfChildren, MAX_CHILDREN_COUNTED);
+		nonTaxableIncome += validChildCount * CHILD_TAX_ALLOWANCE;
+
+		return nonTaxableIncome;
 	}
 
 	public static class EmployeeInfo {
