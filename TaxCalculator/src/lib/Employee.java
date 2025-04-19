@@ -6,21 +6,23 @@ import java.util.List;
 
 public class Employee {
 
-	private String employeeId;
+	private EmployeeId employeeId;
 	private PersonalData personalData;
 	private LocalDate joinDate;
 	private int monthWorkingInYear;
 	private boolean isForeigner;
-	private boolean gender; // true = Laki-laki, false = Perempuan
+	private Gender gender;
+
 	private int monthlySalary;
 	private int otherMonthlyIncome;
 	private int annualDeductible;
+
 	private Spouse spouse;
 	private List<String> childNames;
-	private List<String> childIdNumbers;
+	private List<ChildId> childIdNumbers;
 
-	public Employee(String employeeId, PersonalData personalData, LocalDate joinDate, boolean isForeigner,
-			boolean gender) {
+	public Employee(EmployeeId employeeId, PersonalData personalData, LocalDate joinDate, boolean isForeigner,
+			Gender gender) {
 		this.employeeId = employeeId;
 		this.personalData = personalData;
 		this.joinDate = joinDate;
@@ -31,23 +33,17 @@ public class Employee {
 		childIdNumbers = new LinkedList<>();
 	}
 
-	public void setMonthlySalary(int grade) {
-		if (grade == 1) {
-			monthlySalary = 3000000;
-			if (isForeigner) {
-				monthlySalary = (int) (3000000 * 1.5);
-			}
-		} else if (grade == 2) {
-			monthlySalary = 5000000;
-			if (isForeigner) {
-				monthlySalary = (int) (3000000 * 1.5);
-			}
-		} else if (grade == 3) {
-			monthlySalary = 7000000;
-			if (isForeigner) {
-				monthlySalary = (int) (3000000 * 1.5);
-			}
+	public void setMonthlySalary(Grade grade) {
+		int baseSalary = switch (grade) {
+			case GRADE1 -> 3000000;
+			case GRADE2 -> 5000000;
+			case GRADE3 -> 7000000;
+		};
+
+		if (isForeigner) {
+			baseSalary *= 1.5;
 		}
+		monthlySalary = baseSalary;
 	}
 
 	public void setAnnualDeductible(int deductible) {
@@ -62,7 +58,7 @@ public class Employee {
 		this.spouse = new Spouse(name, idNumber);
 	}
 
-	public void addChild(String childName, String childIdNumber) {
+	public void addChild(String childName, ChildId childIdNumber) {
 		childNames.add(childName);
 		childIdNumbers.add(childIdNumber);
 	}
@@ -85,6 +81,38 @@ public class Employee {
 				annualDeductible,
 				hasSpouse,
 				childIdNumbers.size());
+	}
+
+	public enum Gender {
+		MALE, FEMALE
+	}
+
+	public enum Grade {
+		GRADE1, GRADE2, GRADE3
+	}
+
+	public static class EmployeeId {
+		private final String value;
+
+		public EmployeeId(String value) {
+			this.value = value;
+		}
+
+		public String getValue() {
+			return value;
+		}
+	}
+
+	public static class ChildId {
+		private final String value;
+
+		public ChildId(String value) {
+			this.value = value;
+		}
+
+		public String getValue() {
+			return value;
+		}
 	}
 
 	private static class PersonalData {
