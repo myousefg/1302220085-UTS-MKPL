@@ -9,9 +9,7 @@ public class Employee {
 	private String employeeId;
 	private PersonalData personalData;
 
-	private int yearJoined;
-	private int monthJoined;
-	private int dayJoined;
+	private LocalDate joinDate;
 	private int monthWorkingInYear;
 
 	private boolean isForeigner;
@@ -82,10 +80,10 @@ public class Employee {
 	}
 
 	public int getAnnualIncomeTax() {
-		LocalDate date = LocalDate.now();
+		LocalDate currentDate = LocalDate.now();
 
-		if (date.getYear() == yearJoined) {
-			monthWorkingInYear = date.getMonthValue() - monthJoined;
+		if (currentDate.getYear() == joinDate.getYear()) {
+			monthWorkingInYear = currentDate.getMonthValue() - joinDate.getMonthValue();
 		} else {
 			monthWorkingInYear = 12;
 		}
@@ -99,7 +97,6 @@ public class Employee {
 				childIdNumbers.size());
 	}
 
-	// Grouped firstName, lastName, idNumber, address
 	private static class PersonalData {
 		private String firstName;
 		private String lastName;
