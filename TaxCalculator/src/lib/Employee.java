@@ -8,20 +8,14 @@ public class Employee {
 
 	private String employeeId;
 	private PersonalData personalData;
-
 	private LocalDate joinDate;
 	private int monthWorkingInYear;
-
 	private boolean isForeigner;
 	private boolean gender; // true = Laki-laki, false = Perempuan
-
 	private int monthlySalary;
 	private int otherMonthlyIncome;
 	private int annualDeductible;
-
-	private String spouseName;
-	private String spouseIdNumber;
-
+	private Spouse spouse;
 	private List<String> childNames;
 	private List<String> childIdNumbers;
 
@@ -64,9 +58,8 @@ public class Employee {
 		this.otherMonthlyIncome = income;
 	}
 
-	public void setSpouse(String spouseName, String spouseIdNumber) {
-		this.spouseName = spouseName;
-		this.spouseIdNumber = spouseIdNumber;
+	public void setSpouse(String name, String idNumber) {
+		this.spouse = new Spouse(name, idNumber);
 	}
 
 	public void addChild(String childName, String childIdNumber) {
@@ -83,12 +76,14 @@ public class Employee {
 			monthWorkingInYear = 12;
 		}
 
+		boolean hasSpouse = (spouse == null || spouse.getIdNumber().equals(""));
+
 		return TaxFunction.calculateTax(
 				monthlySalary,
 				otherMonthlyIncome,
 				monthWorkingInYear,
 				annualDeductible,
-				spouseIdNumber.equals(""),
+				hasSpouse,
 				childIdNumbers.size());
 	}
 
@@ -103,6 +98,20 @@ public class Employee {
 			this.lastName = lastName;
 			this.idNumber = idNumber;
 			this.address = address;
+		}
+	}
+
+	private static class Spouse {
+		private String name;
+		private String idNumber;
+
+		public Spouse(String name, String idNumber) {
+			this.name = name;
+			this.idNumber = idNumber;
+		}
+
+		public String getIdNumber() {
+			return idNumber;
 		}
 	}
 }
